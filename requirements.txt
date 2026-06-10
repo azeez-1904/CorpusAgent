@@ -1,0 +1,11 @@
+# CorpusAgent backend dependencies
+fastapi==0.115.0
+uvicorn==0.32.0
+pydantic==2.12.3
+python-multipart==0.0.20
+websockets==15.0.1
+requests==2.32.3
+numpy==2.1.3
+pypdf==5.1.0
+python-dotenv==1.1.1
+dashscope==1.20.14
