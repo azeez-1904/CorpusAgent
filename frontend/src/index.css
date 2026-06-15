@@ -4,29 +4,160 @@
 
 :root {
   color-scheme: dark;
+
+  /* --- design tokens (mirrored from tailwind for raw CSS use) --- */
+  --bg-primary: #020408;
+  --bg-surface: #0a0f1a;
+  --bg-card: #111827;
+  --bg-card-hover: #1a2235;
+  --accent-blue: #3b82f6;
+  --accent-cyan: #06b6d4;
+  --accent-purple: #8b5cf6;
+  --accent-green: #10b981;
+  --accent-orange: #f59e0b;
+  --accent-red: #ef4444;
+  --text-primary: #f1f5f9;
+  --text-muted: #64748b;
+  --border: rgba(255, 255, 255, 0.08);
+  --glow-blue: 0 0 20px rgba(59, 130, 246, 0.4);
+  --glow-purple: 0 0 20px rgba(139, 92, 246, 0.4);
+  --glow-green: 0 0 20px rgba(16, 185, 129, 0.4);
 }
 
 html,
 body,
 #root {
   margin: 0;
-  min-height: 100%;
+  height: 100%;
 }
 
 body {
-  background: #0d0e12;
-  color: #f2f3f5;
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, 'Segoe UI', sans-serif;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'ss01';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden; /* full-viewport app, panels scroll internally */
 }
 
-/* Slim scrollbars for the side panels */
+/* ----------------------------------------------------------------------------
+   Atmospheric background — layered radial gradient meshes + faint grain.
+   Sits behind the entire app to give the "deep space intelligence" depth.
+---------------------------------------------------------------------------- */
+.app-atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 600px at 12% -5%, rgba(59, 130, 246, 0.12), transparent 60%),
+    radial-gradient(800px 600px at 95% 8%, rgba(139, 92, 246, 0.1), transparent 60%),
+    radial-gradient(1000px 700px at 50% 110%, rgba(6, 182, 212, 0.08), transparent 60%),
+    var(--bg-primary);
+}
+
+/* Fine grain overlay to kill banding on the dark gradients */
+.app-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ----------------------------------------------------------------------------
+   Custom scrollbars — slim, glassy, theme-tinted.
+---------------------------------------------------------------------------- */
 *::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
 *::-webkit-scrollbar-thumb {
-  background: #2e313b;
-  border-radius: 4px;
+  background: rgba(59, 130, 246, 0.18);
+  border-radius: 99px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.35);
+  background-clip: padding-box;
+}
+
+/* ----------------------------------------------------------------------------
+   Reusable surface treatments.
+---------------------------------------------------------------------------- */
+.glass {
+  background: rgba(10, 15, 26, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+}
+
+.panel {
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.7), rgba(10, 15, 26, 0.55));
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+}
+
+/* Hairline gradient top-border accent used on premium cards */
+.edge-accent {
+  position: relative;
+}
+.edge-accent::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(59, 130, 246, 0.5),
+    rgba(139, 92, 246, 0.4),
+    transparent
+  );
+}
+
+/* Conic rotating border for the logo hexagon */
+.conic-rotate {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    var(--accent-blue) 90deg,
+    var(--accent-cyan) 180deg,
+    transparent 300deg
+  );
+  animation: conic-spin 4s linear infinite;
+}
+@keyframes conic-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Thin animated progress shimmer for in-flight sub-queries */
+.shimmer-bar {
+  background: linear-gradient(
+    90deg,
+    rgba(59, 130, 246, 0.15),
+    rgba(59, 130, 246, 0.55),
+    rgba(59, 130, 246, 0.15)
+  );
+  background-size: 200% 100%;
+  animation: shimmer-move 1.5s linear infinite;
+}
+@keyframes shimmer-move {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* Selection */
+::selection {
+  background: rgba(59, 130, 246, 0.3);
+  color: #fff;
 }

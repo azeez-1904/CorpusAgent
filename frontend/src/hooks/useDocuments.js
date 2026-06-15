@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { getDocuments } from '../api'
+import { getDocuments } from '../lib/api'
 
 /** Loads documents (grouped by title with version chains) and exposes a refresh. */
 export function useDocuments() {
@@ -9,7 +9,8 @@ export function useDocuments() {
   const refresh = useCallback(async () => {
     setLoading(true)
     try {
-      setDocuments(await getDocuments())
+      const data = await getDocuments()
+      setDocuments(Array.isArray(data) ? data : [])
     } catch {
       setDocuments([])
     } finally {

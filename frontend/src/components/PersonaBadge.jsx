@@ -1,70 +1,83 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
+import { Sparkles } from 'lucide-react'
 
 /**
- * The hero element. Shows the self-generated expert persona with a typing
- * effect and a pulsing ring while the SpecializationAgent is working.
+ * Header-center persona pill. When the SpecializationAgent updates the persona,
+ * the text types in character-by-character behind a blinking cursor and the
+ * whole pill pulses with a blue glow.
  */
 export default function PersonaBadge({ persona, pulsing }) {
   const fullText = persona?.persona || ''
   const [typed, setTyped] = useState('')
+  const intervalRef = useRef(null)
 
   useEffect(() => {
+    clearInterval(intervalRef.current)
     if (!fullText) {
       setTyped('')
       return
     }
-    setTyped('')
     let i = 0
-    const id = setInterval(() => {
+    setTyped('')
+    intervalRef.current = setInterval(() => {
       i += 2
       setTyped(fullText.slice(0, i))
-      if (i >= fullText.length) clearInterval(id)
-    }, 18)
-    return () => clearInterval(id)
+      if (i >= fullText.length) clearInterval(intervalRef.current)
+    }, 16)
+    return () => clearInterval(intervalRef.current)
   }, [fullText])
 
   const empty = !persona?.persona
 
   return (
-    <div
-      className={`rounded-2xl border border-purple/30 bg-gradient-to-br from-surface2 to-surface px-6 py-5 transition-all ${
-        pulsing ? 'animate-pulse-ring border-purple' : ''
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className={`relative flex min-w-0 max-w-[640px] items-center gap-2.5 rounded-full border px-3.5 py-1.5 transition-shadow duration-500 ${
+        pulsing
+          ? 'border-blue/50 bg-blue/10 shadow-glow-blue'
+          : 'border-white/8 bg-card/60'
       }`}
+      style={{ backdropFilter: 'blur(12px)' }}
     >
-      <div className="flex items-center gap-3">
-        <div
-          className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-purple/20 text-xl ${
-            pulsing ? 'animate-pulse' : ''
-          }`}
-        >
-          🧠
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted">
-              CorpusAgent Persona
-            </span>
-            {persona?.domain && (
-              <span className="rounded-full bg-purple/20 px-2.5 py-0.5 text-xs font-semibold text-purple">
-                {persona.domain}
-              </span>
-            )}
-            {pulsing && (
-              <span className="text-xs text-purple animate-pulse">specialising…</span>
-            )}
-          </div>
-          {empty ? (
-            <p className="mt-1 text-sm italic text-muted">
-              No persona yet — upload documents to specialise the agent.
-            </p>
-          ) : (
-            <p className="mt-1 text-[15px] italic leading-snug text-ink">
-              “{typed}
-              <span className="animate-blink">▍</span>”
-            </p>
-          )}
-        </div>
+      <span
+        className={`grid h-6 w-6 shrink-0 place-items-center rounded-full ${
+          pulsing ? 'bg-blue/25 text-blue animate-pulse' : 'bg-purple/15 text-purple'
+        }`}
+      >
+        <Sparkles size={13} strokeWidth={2.25} />
+      </span>
+
+      <div className="flex min-w-0 items-center gap-2">
+        {persona?.domain ? (
+          <span className="shrink-0 rounded-full bg-purple/20 px-2.5 py-0.5 text-[11px] font-semibold text-purple ring-1 ring-purple/30">
+            {persona.domain}
+          </span>
+        ) : (
+          <span className="shrink-0 rounded-full bg-white/5 px-2.5 py-0.5 text-[11px] font-medium text-muted">
+            Generalist
+          </span>
+        )}
+
+        {empty ? (
+          <span className="truncate text-[12.5px] italic text-muted">
+            Upload documents to self-specialize…
+          </span>
+        ) : (
+          <span className="truncate text-[12.5px] text-ink/90" title={fullText}>
+            {typed}
+            <span className="ml-0.5 inline-block w-[1px] animate-blink text-blue">▍</span>
+          </span>
+        )}
       </div>
-    </div>
+
+      {pulsing && (
+        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-blue">
+          specializing
+        </span>
+      )}
+    </motion.div>
   )
 }

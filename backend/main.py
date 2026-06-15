@@ -18,6 +18,7 @@ from .agents.specialization import SpecializationAgent
 from .agents.version_patrol import VersionPatrolAgent
 from .core import document_store
 from .core import embedder
+from .core import relations as relation_engine
 from .llm import cloud_llm
 
 specialization_agent = SpecializationAgent()
@@ -166,6 +167,16 @@ def documents():
          "sensitive": any(v["sensitive"] for v in vers)}
         for title, vers in grouped.items()
     ]
+
+
+@app.get("/relations")
+def relations():
+    """Content-similarity links between documents, for the knowledge graph.
+
+    Derived from chunk embeddings (centroid cosine similarity) so identical
+    content links up regardless of filename/title differences.
+    """
+    return relation_engine.compute_relations()
 
 
 @app.get("/documents/{doc_id}/versions")

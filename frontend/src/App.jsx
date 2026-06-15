@@ -1,15 +1,18 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import PersonaBadge from './components/PersonaBadge'
+import Header from './components/Header'
 import DocumentPanel from './components/DocumentPanel'
+import MindMap from './components/MindMap'
 import QueryPanel from './components/QueryPanel'
 import AnswerCard from './components/AnswerCard'
-import AgentActivityFeed from './components/AgentActivityFeed'
+import AgentFeed from './components/AgentFeed'
+import StatsPanel from './components/StatsPanel'
 import { useDocuments } from './hooks/useDocuments'
-import { useWebSocket } from './hooks/useWebSocket'
-import { getAlerts, getPersona, getStatus, runQuery } from './api'
+import { useAgentFeed } from './hooks/useAgentFeed'
+import { getAlerts, getPersona, getRelations, getStatus, runQuery } from './lib/api'
 
 export default function App() {
   const { documents, refresh: refreshDocs } = useDocuments()
+  const [relations, setRelations] = useState([])
   const [persona, setPersona] = useState(null)
   const [pulsing, setPulsing] = useState(false)
   const [alerts, setAlerts] = useState([])
@@ -19,6 +22,9 @@ export default function App() {
   const [result, setResult] = useState(null)
   const [thinking, setThinking] = useState('')
   const [subProgress, setSubProgress] = useState({ index: 0, total: 0, sub_query: '' })
+
+  const [selectedTitle, setSelectedTitle] = useState(null)
+  const [highlights, setHighlights] = useState(() => new Set())
 
   const refreshPersona = useCallback(async () => {
     try {
@@ -30,19 +36,38 @@ export default function App() {
 
   const refreshAlerts = useCallback(async () => {
     try {
-      setAlerts(await getAlerts())
+      const data = await getAlerts()
+      setAlerts(Array.isArray(data) ? data : [])
     } catch {
       setAlerts([])
+    }
+  }, [])
+
+  const refreshStatus = useCallback(async () => {
+    try {
+      setStatus(await getStatus())
+    } catch {
+      setStatus(null)
+    }
+  }, [])
+
+  const refreshRelations = useCallback(async () => {
+    try {
+      const data = await getRelations()
+      setRelations(Array.isArray(data) ? data : [])
+    } catch {
+      setRelations([])
     }
   }, [])
 
   useEffect(() => {
     refreshPersona()
     refreshAlerts()
-    getStatus().then(setStatus).catch(() => setStatus(null))
-  }, [refreshPersona, refreshAlerts])
+    refreshStatus()
+    refreshRelations()
+  }, [refreshPersona, refreshAlerts, refreshStatus, refreshRelations])
 
-  // Live agent events drive the persona pulse, sub-query progress, and refreshes.
+  // Live agent events drive persona pulse, sub-query progress, and refreshes.
   const onEvent = useCallback(
     (e) => {
       switch (e.event) {
@@ -62,6 +87,8 @@ export default function App() {
           break
         case 'document_uploaded':
           refreshDocs()
+          refreshStatus()
+          refreshRelations()
           break
         case 'query_complete':
           setThinking('')
@@ -70,18 +97,27 @@ export default function App() {
           break
       }
     },
-    [refreshPersona, refreshAlerts, refreshDocs],
+    [refreshPersona, refreshAlerts, refreshDocs, refreshStatus, refreshRelations],
   )
 
-  const { events, connected } = useWebSocket(onEvent)
+  const { events, connected, activeAgent } = useAgentFeed(onEvent)
 
   const onSubmit = useCallback(async (query) => {
     setLoading(true)
     setResult(null)
-    setThinking('Agent is thinking')
+    setHighlights(new Set())
+    setThinking('Decomposing query…')
     setSubProgress({ index: 0, total: 0, sub_query: '' })
     try {
-      setResult(await runQuery(query))
+      const res = await runQuery(query)
+      setResult(res)
+      // Light up the version nodes that were actually consulted. Keyed by
+      // title+version (the graph maps these to its version nodes), so it stays
+      // correct even when node ids are disambiguated.
+      const hot = new Set(
+        (res.versions_consulted || []).map((v) => `${v.title}::${v.version}`),
+      )
+      setHighlights(hot)
     } catch (err) {
       setResult({
         answer:
@@ -100,102 +136,96 @@ export default function App() {
     refreshDocs()
     refreshAlerts()
     refreshPersona()
-  }, [refreshDocs, refreshAlerts, refreshPersona])
+    refreshStatus()
+    refreshRelations()
+  }, [refreshDocs, refreshAlerts, refreshPersona, refreshStatus, refreshRelations])
 
   const alertTitles = useMemo(
-    () => new Set(alerts.map((a) => a.doc_title)),
+    () => new Set((Array.isArray(alerts) ? alerts : []).map((a) => a.doc_title)),
     [alerts],
   )
 
+  // Derive session telemetry from the live query_complete stream.
+  const stats = useMemo(() => {
+    const done = events.filter((e) => e.event === 'query_complete')
+    const edge = done.filter((e) => e.route === 'local').length
+    const cloud = done.filter((e) => e.route === 'cloud' || e.route === 'hybrid').length
+    const latencies = done.map((e) => e.latency_ms || 0).filter(Boolean)
+    const avgLatency = latencies.length
+      ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length)
+      : 0
+    return { queries: done.length, edge, cloud, avgLatency, privacy: edge }
+  }, [events])
+
+  const docCount = status?.documents ?? documents.length
+
   return (
-    <div className="min-h-screen bg-bg text-ink">
-      <header className="border-b border-white/10 bg-surface/60 backdrop-blur">
-        <div className="mx-auto flex max-w-[1400px] items-center gap-3 px-6 py-3.5">
-          <span className="text-xl">🧠</span>
-          <div>
-            <h1 className="text-base font-bold leading-tight text-ink">CorpusAgent</h1>
-            <p className="text-[11px] text-muted">
-              Self-specializing edge RAG with privacy-aware cloud escalation
-            </p>
-          </div>
-          <div className="ml-auto flex items-center gap-2 text-xs">
-            {status && (
-              <>
-                <Pill
-                  ok={status.cloud_configured}
-                  on="☁️ Cloud ready"
-                  off="cloud off"
-                />
-                <Pill ok={status.ollama_running} on="⚡ Edge online" off="edge off" />
-                {status.gpu?.name && (
-                  <span className="rounded-lg bg-surface2 px-2.5 py-1 text-muted">
-                    {status.gpu.name}
-                  </span>
-                )}
-              </>
-            )}
-            <span
-              className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 ${
-                connected ? 'text-green' : 'text-muted'
-              }`}
-            >
-              <span
-                className={`h-2 w-2 rounded-full ${
-                  connected ? 'animate-pulse bg-green' : 'bg-muted'
-                }`}
-              />
-              {connected ? 'live' : 'reconnecting'}
-            </span>
-          </div>
-        </div>
-      </header>
+    <div className="relative flex h-screen flex-col overflow-hidden">
+      <div className="app-atmosphere" />
+      <div className="app-grain" />
 
-      <main className="mx-auto max-w-[1400px] px-6 py-5">
-        <PersonaBadge persona={persona} pulsing={pulsing} />
+      <Header
+        persona={persona}
+        pulsing={pulsing}
+        status={status}
+        connected={connected}
+        docCount={docCount}
+      />
 
-        <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[300px_minmax(0,1fr)_320px]">
-          <div className="h-[calc(100vh-260px)] min-h-[420px]">
-            <DocumentPanel
+      <main className="relative z-10 grid min-h-0 flex-1 grid-cols-[280px_minmax(0,1fr)_320px] gap-4 p-4">
+        {/* LEFT — documents */}
+        <DocumentPanel
+          documents={documents}
+          onUploaded={onUploaded}
+          alertTitles={alertTitles}
+          onSelectDoc={setSelectedTitle}
+          selectedTitle={selectedTitle}
+        />
+
+        {/* CENTER — graph + query */}
+        <div className="flex min-h-0 flex-col gap-4">
+          <div className="panel relative min-h-0 flex-[1.15] overflow-hidden rounded-2xl">
+            <div className="pointer-events-none absolute left-4 top-3 z-10 flex items-center gap-2">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-muted">
+                Knowledge Graph
+              </span>
+            </div>
+            <MindMap
               documents={documents}
-              onUploaded={onUploaded}
+              relations={relations}
+              highlights={highlights}
               alertTitles={alertTitles}
+              selectedTitle={selectedTitle}
             />
           </div>
 
-          <div className="space-y-5">
+          <div className="flex min-h-0 flex-[1] flex-col gap-4 overflow-y-auto pr-1">
             <QueryPanel
               onSubmit={onSubmit}
               loading={loading}
               subProgress={subProgress}
               thinking={thinking}
+              hasDocs={documents.length > 0}
             />
             {result ? (
               <AnswerCard result={result} />
             ) : (
-              <div className="rounded-2xl border border-dashed border-white/10 bg-surface/40 p-10 text-center text-sm text-muted">
+              <div className="rounded-2xl border border-dashed border-white/10 bg-card/30 p-8 text-center text-sm text-muted">
                 Ask a question above. Sensitive documents are answered on-device;
-                uncertain answers escalate to Qwen Cloud (☁️ CLOUD).
+                uncertain answers escalate to Qwen Cloud.
               </div>
             )}
           </div>
+        </div>
 
-          <div className="h-[calc(100vh-260px)] min-h-[420px]">
-            <AgentActivityFeed events={events} connected={connected} />
+        {/* RIGHT — agent feed + telemetry */}
+        <div className="flex min-h-0 flex-col gap-3">
+          <div className="min-h-0 flex-1">
+            <AgentFeed events={events} connected={connected} activeAgent={activeAgent} />
           </div>
+          <StatsPanel stats={stats} />
         </div>
       </main>
     </div>
-  )
-}
-
-function Pill({ ok, on, off }) {
-  return (
-    <span
-      className={`rounded-lg px-2.5 py-1 ${
-        ok ? 'bg-accent/15 text-accent' : 'bg-surface2 text-muted'
-      }`}
-    >
-      {ok ? on : off}
-    </span>
   )
 }

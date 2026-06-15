@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { wsURL } from '../api'
+import { wsURL } from '../lib/api'
 
 /**
  * Resilient WebSocket hook with automatic reconnection (exponential backoff).

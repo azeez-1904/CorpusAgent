@@ -1,0 +1,99 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e9]: CA
+      - generic [ref=e10]:
+        - heading "CorpusAgent" [level=1] [ref=e11]
+        - paragraph [ref=e12]: Temporal RAG Intelligence
+    - generic [ref=e14]:
+      - img [ref=e16]
+      - generic [ref=e19]:
+        - generic [ref=e20]: Generalist
+        - generic [ref=e21]: Upload documents to self-specialize…
+    - generic [ref=e22]:
+      - generic "Edge inference (Ollama)" [ref=e23]:
+        - img [ref=e27]
+        - generic [ref=e30]: edge offline
+      - generic "Cloud escalation (Qwen)" [ref=e31]:
+        - img [ref=e35]
+        - generic [ref=e37]: cloud offline
+      - generic "Documents in corpus" [ref=e38]:
+        - img [ref=e39]
+        - generic [ref=e43]: "0"
+        - generic [ref=e44]: docs
+      - generic "Reconnecting…" [ref=e45]:
+        - img [ref=e46]
+        - text: …
+  - main [ref=e53]:
+    - generic [ref=e54]:
+      - generic [ref=e55]:
+        - img [ref=e56]
+        - generic [ref=e60]: Knowledge Base
+        - generic [ref=e61]: "0"
+        - button "Upload" [ref=e62] [cursor=pointer]:
+          - img [ref=e63]
+          - text: Upload
+      - generic [ref=e64]:
+        - img [ref=e65]
+        - text: Drag & drop a PDF / TXT
+      - paragraph [ref=e69]:
+        - text: No documents yet.
+        - text: Drop a PDF / TXT above to begin.
+    - generic [ref=e70]:
+      - generic [ref=e71]:
+        - generic:
+          - generic: Knowledge Graph
+        - generic [ref=e72]:
+          - img [ref=e74]
+          - generic:
+            - paragraph: Upload documents to grow the knowledge graph
+          - generic [ref=e75]:
+            - generic [ref=e76]: Public doc
+            - generic [ref=e78]: Sensitive
+            - generic [ref=e80]: Version
+            - generic [ref=e82]: Retrieved
+      - generic [ref=e84]:
+        - generic [ref=e85]:
+          - generic [ref=e86]:
+            - textbox "Upload a document to start asking questions…" [disabled] [ref=e87]
+            - img
+          - generic [ref=e88]:
+            - generic [ref=e89]: Enter to ask · Shift+Enter newline
+            - button "Ask CorpusAgent" [disabled] [ref=e90]:
+              - img [ref=e91]
+              - text: Ask CorpusAgent
+        - generic [ref=e94]: Ask a question above. Sensitive documents are answered on-device; uncertain answers escalate to Qwen Cloud.
+    - generic [ref=e95]:
+      - generic [ref=e97]:
+        - generic [ref=e98]:
+          - img [ref=e99]
+          - generic [ref=e105]: Agent Activity
+          - generic [ref=e109]: offline
+        - paragraph [ref=e111]: Waiting for agent activity…
+      - generic [ref=e112]:
+        - generic [ref=e114]: Session telemetry
+        - generic [ref=e115]:
+          - generic [ref=e116]:
+            - generic [ref=e117]:
+              - img [ref=e118]
+              - text: Queries
+            - generic [ref=e120]: "0"
+          - generic [ref=e121]:
+            - generic [ref=e122]:
+              - img [ref=e123]
+              - text: Avg latency
+            - generic [ref=e126]: 0 ms
+          - generic [ref=e127]:
+            - generic [ref=e128]:
+              - img [ref=e129]
+              - text: Privacy kept
+            - generic [ref=e132]: "0"
+          - generic [ref=e133]:
+            - img [ref=e134]
+            - generic [ref=e136]:
+              - generic [ref=e137]:
+                - img [ref=e138]
+                - text: edge 0
+              - generic [ref=e141]:
+                - img [ref=e142]
+                - text: cloud 0

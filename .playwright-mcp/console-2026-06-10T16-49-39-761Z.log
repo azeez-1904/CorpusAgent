@@ -1,0 +1,56 @@
+[     199ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:20102
+[     307ms] [WARNING] WebSocket connection to 'ws://localhost:5174/ws' failed: WebSocket is closed before the connection is established. @ http://localhost:5174/src/hooks/useWebSocket.js:53
+[     334ms] TypeError: alerts.map is not a function
+    at http://localhost:5174/src/App.jsx:115:26
+    at updateMemo (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:6545:21)
+    at Object.useMemo (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:18969:20)
+    at exports.useMemo (http://localhost:5174/node_modules/.vite/deps/chunk-LI7Z25U2.js?v=e1056742:947:36)
+    at App (http://localhost:5174/src/App.jsx:114:23)
+    at Object.react_stack_bottom_frame (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:18509:20)
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:5654:24)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:7475:21)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:8525:20)
+    at runWithFiberInDEV (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:997:72)
+[     334ms] [WARNING] %s
+
+%s
+ An error occurred in the <App> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:6965
+[     335ms] [WARNING] WebSocket connection to 'ws://localhost:5174/ws' failed: WebSocket is closed before the connection is established. @ http://localhost:5174/src/hooks/useWebSocket.js:53
+[   26998ms] [WARNING] WebSocket connection to 'ws://localhost:5174/ws' failed: WebSocket is closed before the connection is established. @ http://localhost:5174/src/hooks/useWebSocket.js:53
+[   27018ms] TypeError: documents.map is not a function
+    at DocumentPanel (http://localhost:5174/src/components/DocumentPanel.jsx:85:85)
+    at Object.react_stack_bottom_frame (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:18509:20)
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:5654:24)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:7475:21)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:8525:20)
+    at runWithFiberInDEV (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:997:72)
+    at performUnitOfWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:12561:98)
+    at workLoopSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:12424:43)
+    at renderRootSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:12408:13)
+    at performWorkOnRoot (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:11827:37)
+[   27018ms] [WARNING] %s
+
+%s
+ An error occurred in the <DocumentPanel> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:6965
+[   27020ms] [WARNING] WebSocket connection to 'ws://localhost:5174/ws' failed: WebSocket is closed before the connection is established. @ http://localhost:5174/src/hooks/useWebSocket.js:53
+[   31764ms] [WARNING] WebSocket connection to 'ws://localhost:5174/ws' failed: WebSocket is closed before the connection is established. @ http://localhost:5174/src/hooks/useWebSocket.js:53
+[   31783ms] TypeError: documents.map is not a function
+    at DocumentPanel (http://localhost:5174/src/components/DocumentPanel.jsx:85:85)
+    at Object.react_stack_bottom_frame (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:18509:20)
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:5654:24)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:7475:21)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:8525:20)
+    at runWithFiberInDEV (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:997:72)
+    at performUnitOfWork (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:12561:98)
+    at workLoopSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:12424:43)
+    at renderRootSync (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:12408:13)
+    at performWorkOnRoot (http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:11827:37)
+[   31783ms] [WARNING] %s
+
+%s
+ An error occurred in the <DocumentPanel> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:5174/node_modules/.vite/deps/react-dom_client.js?v=c9506860:6965
+[   31785ms] [WARNING] WebSocket connection to 'ws://localhost:5174/ws' failed: WebSocket is closed before the connection is established. @ http://localhost:5174/src/hooks/useWebSocket.js:53
+[   39867ms] [WARNING] WebSocket connection to 'ws://localhost:5174/ws' failed: WebSocket is closed before the connection is established. @ http://localhost:5174/src/hooks/useWebSocket.js:53
